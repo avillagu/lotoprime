@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LotoPrime - Generador Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #0D1117; --card-bg: #161B22; --primary: #3D8BFF;
+            --accent: #FFD643; --success: #00E676; --text-main: rgba(255, 255, 255, 0.9);
+            --text-muted: rgba(255, 255, 255, 0.5); --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.1); --font: 'Poppins', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--bg-color); color: var(--text-main); font-family: var(--font); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .glass-panel { background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 24px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
+        header { width: 100%; padding: 20px; text-align: center; position: absolute; top: 0; z-index: 10; }
+        .logo { font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; background: linear-gradient(90deg, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        footer { text-align: center; padding: 15px; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--glass-border); }
+        
+        #selection-screen { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; width: 100%; margin-top: 60px; }
+        .lotto-card { width: 280px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.4s ease; position: relative; display: flex; flex-direction: column; align-items: center; }
+        .lotto-card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 15px 40px rgba(61, 139, 255, 0.15); border-color: rgba(61, 139, 255, 0.3); }
+        .card-icon { font-size: 3rem; margin-bottom: 15px; display: block; }
+        .card-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 5px; }
+        .card-desc { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px; }
+        
+        .jackpot-badge { background: rgba(0, 230, 118, 0.15); color: var(--success); padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(0, 230, 118, 0.3); box-shadow: 0 0 15px rgba(0, 230, 118, 0.1); display: inline-block; min-width: 100px; }
+        
+        #game-screen { display: none; width: 100%; max-width: 600px; text-align: center; flex-direction: column; align-items: center; margin-top: 40px; }
+        .game-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 40px; background: linear-gradient(180deg, #fff, #ccc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: fadeInDown 0.8s ease; }
+        .results-container { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 15px; min-height: 120px; margin-bottom: 40px; padding: 20px; }
+        
+        .ball { width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(145deg, #2B3240, #10141B); border: 1px solid rgba(255,255,255,0.15); box-shadow: 5px 5px 10px rgba(0,0,0,0.5), inset 2px 2px 5px rgba(255,255,255,0.1); display: flex; justify-content: center; align-items: center; font-size: 1.8rem; font-weight: 700; color: #fff; opacity: 0; transform: scale(0.5); }
+        .ball.superball { background: linear-gradient(145deg, #5c450a, #3d2d00); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 15px rgba(255, 214, 67, 0.2); }
+        
+        @keyframes popIn { 0% { opacity: 0; transform: scale(0.5); } 60% { transform: scale(1.1); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .btn { border: none; padding: 16px 40px; border-radius: 50px; font-family: var(--font); font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; }
+        .btn-primary { background: linear-gradient(90deg, var(--primary), #7F5AF0); color: white; margin-bottom: 20px; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(61, 139, 255, 0.6); }
+        .btn-secondary { background: transparent; border: 1px solid var(--glass-border); color: var(--text-muted); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+        
+        @media (max-width: 768px) { .game-title { font-size: 2rem; } .ball { width: 60px; height: 60px; font-size: 1.5rem; } .container { justify-content: flex-start; padding-top: 80px; } }
+    </style>
+</head>
+<body>
+    <header><div class="logo">LOTOPRIME</div></header>
+
+    <div class="container">
+        <div id="selection-screen">
+            <div class="lotto-card glass-panel" onclick="app.selectGame('miloto')">
+                <span class="card-icon">🎱</span><h2 class="card-title">MiLoto</h2><p class="card-desc">5 números (1-39)</p>
+                <div class="jackpot-badge" id="jackpot-miloto">Cargando...</div>
+            </div>
+            <div class="lotto-card glass-panel" onclick="app.selectGame('baloto')">
+                <span class="card-icon">🌟</span><h2 class="card-title">Baloto</h2><p class="card-desc">5 + Superbalota</p>
+                <div class="jackpot-badge" id="jackpot-baloto">Cargando...</div>
+            </div>
+            <div class="lotto-card glass-panel" onclick="app.selectGame('chance')">
+                <span class="card-icon">🍀</span><h2 class="card-title">Chance</h2><p class="card-desc">4 cifras (0-9999)</p>
+                <div class="jackpot-badge" style="border-color:rgba(255,255,255,0.2); color:#fff;">Diario</div>
+            </div>
+        </div>
+
+        <div id="game-screen">
+            <h1 id="game-title" class="game-title">Juego</h1>
+            <div id="results-area" class="results-container glass-panel"><p style="color:var(--text-muted)">Presiona generar</p></div>
+            <div class="actions">
+                <button id="btn-generate" class="btn btn-primary">Generar Números</button>
+                <button class="btn btn-secondary" onclick="app.goHome()">Volver al inicio</button>
+            </div>
+        </div>
+    </div>
+    <footer>⚠️ App no oficial. Genera números aleatorios.</footer>
+
+    <script>
+        const app = (() => {
+            const API_URL = '/api/premios'; 
+            let jackpotData = { miloto: "...", baloto: "..." };
+            const fetchJackpots = async () => {
+                try {
+                    const response = await fetch(API_URL);
+                    const data = await response.json();
+                    if(data.baloto) jackpotData.baloto = data.baloto;
+                    if(data.miloto) jackpotData.miloto = data.miloto;
+                    updateBadges();
+                } catch (error) {
+                    console.error("Error API", error);
+                    jackpotData.baloto = "Verificar Web"; jackpotData.miloto = "Verificar Web";
+                    updateBadges();
+                }
+            };
+            const updateBadges = () => {
+                const elMiloto = document.getElementById('jackpot-miloto');
+                const elBaloto = document.getElementById('jackpot-baloto');
+                if(elMiloto) elMiloto.innerText = jackpotData.miloto;
+                if(elBaloto) elBaloto.innerText = jackpotData.baloto;
+            };
+
+            let currentGame = null;
+            const selectionScreen = document.getElementById('selection-screen');
+            const gameScreen = document.getElementById('game-screen');
+            const gameTitle = document.getElementById('game-title');
+            const resultsArea = document.getElementById('results-area');
+            const btnGenerate = document.getElementById('btn-generate');
+
+            const games = {
+                miloto: { name: 'MiLoto', generate: () => { const n = new Set(); while(n.size<5) n.add(Math.floor(Math.random()*39)+1); return Array.from(n).sort((a,b)=>a-b); } },
+                baloto: { name: 'Baloto', generate: () => { const m = new Set(); while(m.size<5) m.add(Math.floor(Math.random()*43)+1); return { main: Array.from(m).sort((a,b)=>a-b), super: Math.floor(Math.random()*16)+1 }; } },
+                chance: { name: 'Chance', generate: () => Math.floor(Math.random()*10000).toString().padStart(4,'0').split('') }
+            };
+
+            const selectGame = (key) => {
+                currentGame = key;
+                selectionScreen.style.display = 'none'; gameScreen.style.display = 'flex'; gameScreen.style.animation = 'fadeIn 0.5s ease-out';
+                gameTitle.innerText = games[key].name; resultsArea.innerHTML = '<p style="color:var(--text-muted);opacity:0.6;">Presiona generar</p>';
+            };
+            const goHome = () => { gameScreen.style.display = 'none'; selectionScreen.style.display = 'flex'; selectionScreen.style.animation = 'fadeIn 0.5s ease-out'; };
+            
+            const renderBalls = (data, type) => {
+                resultsArea.innerHTML = '';
+                const createBall = (v, s=false, i) => {
+                    const b = document.createElement('div'); b.className = s?'ball superball':'ball'; b.innerText = v;
+                    b.style.animation = `popIn 0.6s cubic-bezier(0.175,0.885,0.32,1.275) forwards`; b.style.animationDelay = `${i*0.1}s`; return b;
+                };
+                if(type==='miloto') data.forEach((n,i)=>resultsArea.appendChild(createBall(n,false,i)));
+                else if(type==='baloto') { data.main.forEach((n,i)=>resultsArea.appendChild(createBall(n,false,i))); resultsArea.appendChild(createBall(data.super,true,5)); }
+                else data.forEach((n,i)=>resultsArea.appendChild(createBall(n,false,i)));
+            };
+
+            btnGenerate.addEventListener('click', () => {
+                if(navigator.vibrate) navigator.vibrate(20);
+                btnGenerate.disabled = true; btnGenerate.style.opacity = '0.7';
+                renderBalls(games[currentGame].generate(), currentGame);
+                setTimeout(()=> { btnGenerate.disabled = false; btnGenerate.style.opacity = '1'; }, 800);
+            });
+
+            fetchJackpots();
+            return { selectGame, goHome };
+        })();
+    </script>
+</body>
+</html>
